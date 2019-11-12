@@ -29,6 +29,7 @@ chatRouter.post('/:chatId/sendMessage',[check('text').isLength({min:1,max:1024})
     const message = new Message();
     message.writtenBy = user;
     message.text = req.body.text;
+    message.sentTime = new Date();
     if(!chat.messages) {
         chat.messages = [];
     }
