@@ -1,11 +1,13 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
+import { createConnection, getManager } from "typeorm";
 import { User } from "./entity/User";
 import * as Express from "express";
 import { router } from "./routes/router";
 import * as net from "net";
 import * as jsonwebtoken from "jsonwebtoken";
 import * as bodyParser from "body-parser";
+import { Chat } from "./entity/Chat";
+import { Message } from "./entity/Message";
 createConnection().then(async connection => {
 
     // console.log("Inserting a new user into the database...");
@@ -49,4 +51,19 @@ createConnection().then(async connection => {
     app.listen(1337, () => {
         console.log('Server started!');
     });
+
+
+
+    // const chat = new Chat();
+    // chat.messages = [];
+    // const msg1 = new Message();
+    // msg1.text = 'text1';
+    // const msg2 = new Message();
+    // msg2.text = 'text2';
+    // chat.messages.push(msg1,msg2);
+    // console.log(chat);
+    // getManager().getRepository(Chat).save(chat);
+
+
+
 }).catch(error => console.log(error));
