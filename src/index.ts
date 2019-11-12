@@ -1,9 +1,11 @@
 import "reflect-metadata";
-import {createConnection} from "typeorm";
-import {User} from "./entity/User";
+import { createConnection } from "typeorm";
+import { User } from "./entity/User";
 import * as Express from "express";
-import {router} from "./routes/router";
+import { router } from "./routes/router";
 import * as net from "net";
+import * as jsonwebtoken from "jsonwebtoken";
+import * as bodyParser from "body-parser";
 createConnection().then(async connection => {
 
     // console.log("Inserting a new user into the database...");
@@ -28,12 +30,14 @@ createConnection().then(async connection => {
     // });
 
     const app = Express();
-    app.use('/',router);
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use('/', router);
     net.createServer((sock: net.Socket) => {
-        sock.on('data',(data: Buffer) => {
+        sock.on('data', (data: Buffer) => {
             sock.write(data);
         });
-        sock.on('close',() => {
+        sock.on('close', () => {
             console.log('Socket closed!');
         });
         connection.manager.find(User).then((users: User[]) => {
@@ -42,7 +46,7 @@ createConnection().then(async connection => {
             });
         });
     }).listen(1338);
-    app.listen(1337,() => {
+    app.listen(1337, () => {
         console.log('Server started!');
     });
 }).catch(error => console.log(error));
