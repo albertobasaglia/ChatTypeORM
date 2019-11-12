@@ -7,13 +7,13 @@ export class Message{
     @PrimaryGeneratedColumn()
     id: number;   
     
-    @Column()
+    @Column({default: ''})
     text: string;
 
     @ManyToOne(type => Chat, chat => chat.messages)
     chat: Chat;
 
-    @ManyToOne(type => User, {eager: true})
+    @ManyToOne(type => User)
     writtenBy: User;
 
     @ManyToOne(type => Message, {nullable: true})

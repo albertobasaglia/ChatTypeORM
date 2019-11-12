@@ -6,11 +6,14 @@ import { User } from "./User";
 export class Chat {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    name: string;
     
     @OneToMany(type => Message, messages => messages.chat, {cascade: true})
     messages: Message[];
 
-    @ManyToOne(type => User, {eager: true})
+    @ManyToOne(type => User)
     createdBy: User;
 
     @ManyToMany(type => User, user => user.chats)

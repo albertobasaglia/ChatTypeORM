@@ -16,6 +16,6 @@ export class User {
     @Column()
     email: string;
 
-    @ManyToMany(type => Chat, chat => chat.users, {eager: true})
+    @ManyToMany(type => Chat, chat => chat.users)
     chats: Chat[];
 }
