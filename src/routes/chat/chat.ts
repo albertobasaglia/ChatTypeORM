@@ -1,5 +1,5 @@
 import * as Express from "express";
-import { getManager } from "typeorm";
+import { getManager, getRepository } from "typeorm";
 import { Chat } from "../../entity/Chat";
 import { Message } from "../../entity/Message";
 import { check, validationResult } from "express-validator";
@@ -37,3 +37,42 @@ chatRouter.post('/:chatId/sendMessage',[check('text').isLength({min:1,max:1024})
     const savedChat = await chatRepository.save(chat);
     res.status(200).send({id: message.id});
 });
+chatRouter.get('/:chatId/getAllMessages',async (req,res) => {
+    const messageRepository = getManager().getRepository(Message);
+    const messages = await messageRepository.createQueryBuilder('message')
+        .innerJoin('message.chat','chat')
+        .where('chat.id = :chatId',{chatId: req.params.chatId})
+        .orderBy('message.sentTime','DESC')
+        .getMany();
+    res.send(messages);
+});
+chatRouter.get('/:chatId/getLastMessages', [check('count').isNumeric()], async (req,res) => {
+    const messageRepository = getManager().getRepository(Message);
+    const messages = await messageRepository.createQueryBuilder('message')
+        .innerJoin('message.chat','chat')
+        .where('chat.id = :chatId',{chatId: req.params.chatId})
+        .orderBy('message.sentTime','DESC')
+        .limit(req.query.count)
+        .getMany();
+    res.send(messages);
+});
+chatRouter.get('/:chatId/getMessagesSince',[check('datetime').isAlphanumeric()], async (req,res) => {
+    const messageRepository = getManager().getRepository(Message);
+    const messages = await messageRepository.createQueryBuilder('message')
+        .innerJoin('message.chat','chat')
+        .where('chat.id = :chatId',{chatId: req.params.chatId})
+        .orderBy('message.sentTime','DESC')
+        .where('message.sentTime >= :datetime',{datetime: new Date(req.query.datetime)})
+        .getMany();
+    res.send(messages);
+});
+chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
+    const messageRepository = getManager().getRepository(Message);
+    const messages = await messageRepository.createQueryBuilder('message')
+        .innerJoin('message.chat','chat')
+        .where('chat.id = :chatId',{chatId: req.params.chatId})
+        .orderBy('message.sentTime','DESC')
+        .where('message.id > :id',{id: req.query.id})
+        .getMany();
+    res.send(messages);
+})
