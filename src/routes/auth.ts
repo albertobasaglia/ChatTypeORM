@@ -100,7 +100,7 @@ authRouter.get('/confirm/:code', (req, res) => {
     getManager().getRepository(User)
         .findOne({ where: { confirmCode: code } })
         .then((user: User) => {
-            if (user.confirmCode == code) {
+            if (user && user.confirmCode == code) {
                 user.confirmed = true;
                 user.confirmCode = null;
                 getManager().save(user);
