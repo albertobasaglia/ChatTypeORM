@@ -53,7 +53,7 @@ authRouter.post('/login', [
                     throw err;
                 }
                 if(same) {
-                    jsonwebtoken.sign({id: user.id,email: user.email},"secret",{expiresIn: "2 days"},(err,encoded) => {
+                    jsonwebtoken.sign({id: user.id,email: user.email},process.env.JWT_SECRET,{expiresIn: "2 days"},(err,encoded) => {
                         if(err) {
                             throw err;
                         } else {
