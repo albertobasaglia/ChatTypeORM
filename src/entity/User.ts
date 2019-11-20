@@ -18,4 +18,10 @@ export class User {
 
     @ManyToMany(type => Chat, chat => chat.users)
     chats: Chat[];
+
+    @Column({default: false})
+    confirmed: boolean;
+
+    @Column({nullable: true})
+    confirmCode: string;
 }
