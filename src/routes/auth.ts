@@ -104,8 +104,12 @@ authRouter.get('/confirm/:code', (req, res) => {
     const code = req.params.code;
     getManager().getRepository(User)
         //TODO could be broken
-        .findOne({ where: { confirmCode: code },select: ['confirmed','confirmCode'] })
-        .then((user: User) => {
+        //.findOne({ where: { confirmCode: code },select: ['confirmed','confirmCode'] })
+        .createQueryBuilder('user')
+        .where('user.confirmCode = :confirmCode',{confirmCode:code})
+        .addSelect(['user.confirmed','user.confirmCode'])
+        .getOne().then((user: User) => {
+            console.log(user);
             if (user && user.confirmCode == code) {
                 user.confirmed = true;
                 user.confirmCode = null;
