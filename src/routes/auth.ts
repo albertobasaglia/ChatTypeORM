@@ -72,7 +72,7 @@ authRouter.post('/login', [
         res.status(422).send({ errors });
     } else {
         const userRepo = getManager().getRepository(User);
-        const user = await userRepo.findOne({ where: { email: req.body.email } });
+        const user = await userRepo.findOne({ where: { email: req.body.email },select:['passwordHash'] });
         if (!user) {
             res.status(401).send({ msg: 'credenziali errate!' });
         } else {
