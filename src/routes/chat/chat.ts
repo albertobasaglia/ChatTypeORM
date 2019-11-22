@@ -107,4 +107,24 @@ chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
             .getMany();
         res.send(messages);
     }
-})
+});
+chatRouter.post('/:chatId/addUser', async (req,res) => {
+    const chatRepository = getManager().getRepository(Chat);
+    const chat = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["createdBy","users"]});
+    // TODO check if admins
+    const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});    
+    if(chat.createdBy.id != user.id)  {
+        res.status(403).send({msg: 'Non hai i permessi!'});
+    } else {
+        getManager().getRepository(User).findOne({where: {id: req.body.userId}})
+        .then((toAdd: User) => {
+            if(toAdd == null) {
+                res.status(400).send({msg: 'Unknown user!'});
+            } else {
+                chat.users.push(toAdd);
+                chatRepository.save(chat);
+                res.status(200).send({msg: 'Ok!'});
+            }
+        });
+    }
+});
