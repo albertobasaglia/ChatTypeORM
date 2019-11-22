@@ -128,3 +128,12 @@ chatRouter.post('/:chatId/addUser', async (req,res) => {
         });
     }
 });
+chatRouter.get('/:chatId/info',async (req,res) => {
+    const chatRepository = getManager().getRepository(Chat);
+    const chat = await chatRepository.findOne({where: {id: req.params.chatId},relations: ['users']});
+    if(chat == null) {
+        res.status(400).send({msg: 'Unknown chat!'});
+    } else {
+        res.status(200).send(chat);
+    }
+});

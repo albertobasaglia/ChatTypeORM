@@ -72,7 +72,12 @@ authRouter.post('/login', [
         res.status(422).send({ errors });
     } else {
         const userRepo = getManager().getRepository(User);
-        const user = await userRepo.findOne({ where: { email: req.body.email },select:['passwordHash'] });
+        //const user = await userRepo.findOne({ where: { email: req.body.email },select:['passwordHash'] });
+        const user = await userRepo.createQueryBuilder('user')
+        .where('user.email = :email',{email: req.body.email})
+        .addSelect('user.passwordHash')
+        .getOne();
+        console.log(user);
         if (!user) {
             res.status(401).send({ msg: 'credenziali errate!' });
         } else {
@@ -98,7 +103,8 @@ authRouter.post('/login', [
 authRouter.get('/confirm/:code', (req, res) => {
     const code = req.params.code;
     getManager().getRepository(User)
-        .findOne({ where: { confirmCode: code } })
+        //TODO could be broken
+        .findOne({ where: { confirmCode: code },select: ['confirmed','confirmCode'] })
         .then((user: User) => {
             if (user && user.confirmCode == code) {
                 user.confirmed = true;

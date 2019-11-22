@@ -4,9 +4,12 @@ import { Chat } from "../../entity/Chat";
 import { Message } from "../../entity/Message";
 import { User } from "../../entity/User";
 export const userRouter = Express.Router();
-userRouter.get('/getAllChats', (req, res) => {
+userRouter.get('/getAllChats', async (req, res) => {
         getManager().getRepository(Chat)
-                .find({ where: { createdBy: req.userId } }).then((chats: Chat[]) => {
-                        res.status(200).send(chats);
-                });
+        .createQueryBuilder('chat')
+        .leftJoinAndSelect('chat.users','user')
+        .getMany().then((chats) => {
+                console.log(chats);
+                res.status(200).send(chats);
+        });
 });
