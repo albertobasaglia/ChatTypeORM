@@ -27,7 +27,7 @@ chatRouter.post('/:chatId/sendMessage',[check('text').isLength({min:1,max:1024})
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
     const chat = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["messages"]});
     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}))  {
+    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
         res.status(403).send({msg: 'Non hai i permessi!'});
     } else {
         const message = new Message();
@@ -47,7 +47,7 @@ chatRouter.get('/:chatId/getAllMessages',async (req,res) => {
     const chatRepository = getManager().getRepository(Chat);
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}))  {
+    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
         res.status(403).send({msg: 'Non hai i permessi!'});
     } else {
         const messages = await messageRepository.createQueryBuilder('message')
@@ -63,7 +63,7 @@ chatRouter.get('/:chatId/getLastMessages', [check('count').isNumeric()], async (
     const chatRepository = getManager().getRepository(Chat);
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}))  {
+    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
         res.status(403).send({msg: 'Non hai i permessi!'});
     } else {
         const messages = await messageRepository.createQueryBuilder('message')
@@ -80,7 +80,7 @@ chatRouter.get('/:chatId/getMessagesSince',[check('datetime').isAlphanumeric()],
     const chatRepository = getManager().getRepository(Chat);
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}))  {
+    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
         res.status(403).send({msg: 'Non hai i permessi!'});
     } else {
         const messages = await messageRepository.createQueryBuilder('message')
@@ -96,7 +96,7 @@ chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
     const messageRepository = getManager().getRepository(Message);const chatRepository = getManager().getRepository(Chat);
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}))  {
+    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
         res.status(403).send({msg: 'Non hai i permessi!'});
     } else {
         const messages = await messageRepository.createQueryBuilder('message')
