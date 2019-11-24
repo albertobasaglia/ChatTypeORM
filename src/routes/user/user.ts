@@ -7,8 +7,11 @@ export const userRouter = Express.Router();
 userRouter.get('/getAllChats', async (req, res) => {
         getManager().getRepository(Chat)
                 .createQueryBuilder('chat')
-                .leftJoinAndSelect('chat.users', 'user')
-                .getMany().then((chats) => {
+                .leftJoin('chat.users', 'user')
+                .select('chat.id','id')
+                .addSelect('chat.name','name')
+                .where('user.id = :userId',{userId: req.userId})
+                .getRawMany().then((chats) => {
                         console.log(chats);
                         res.status(200).send(chats);
                 });
