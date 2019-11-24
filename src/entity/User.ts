@@ -24,4 +24,7 @@ export class User {
 
     @Column({nullable: true,select: false})
     confirmCode: string;
+
+    @Column({select: false, nullable: true})
+    phoneNumber: string;
 }
