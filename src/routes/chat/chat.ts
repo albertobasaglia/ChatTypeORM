@@ -68,6 +68,8 @@ chatRouter.get('/:chatId/getLastMessages', [check('count').isNumeric()], async (
     } else {
         const messages = await messageRepository.createQueryBuilder('message')
             .innerJoin('message.chat','chat')
+            .innerJoin('message.writtenBy','writtenBy')
+            .addSelect(['writtenBy.id','writtenBy.username'])
             .where('chat.id = :chatId',{chatId: req.params.chatId})
             .orderBy('message.sentTime','DESC')
             .limit(req.query.count)
