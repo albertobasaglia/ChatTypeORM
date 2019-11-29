@@ -77,23 +77,25 @@ chatRouter.get('/:chatId/getLastMessages', [check('count').isNumeric()], async (
         res.send(messages);
     }
 });
-chatRouter.get('/:chatId/getMessagesSince',[check('datetime').isAlphanumeric()], async (req,res) => {
-    const messageRepository = getManager().getRepository(Message);
-    const chatRepository = getManager().getRepository(Chat);
-    const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
-    const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
-    if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
-        res.status(403).send({msg: 'Non hai i permessi!'});
-    } else {
-        const messages = await messageRepository.createQueryBuilder('message')
-            .innerJoin('message.chat','chat')
-            .where('chat.id = :chatId',{chatId: req.params.chatId})
-            .orderBy('message.sentTime','DESC')
-            .where('message.sentTime >= :datetime',{datetime: new Date(req.query.datetime)})
-            .getMany();
-        res.send(messages);
-    }
-});
+// chatRouter.get('/:chatId/getMessagesSince',[check('datetime').isAlphanumeric()], async (req,res) => {
+//     const messageRepository = getManager().getRepository(Message);
+//     const chatRepository = getManager().getRepository(Chat);
+//     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
+//     const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});
+//     if(chatWithUsers.users.findIndex((user: User) => {return user.id === req.userId}) === -1)  {
+//         res.status(403).send({msg: 'Non hai i permessi!'});
+//     } else {
+//         const messages = await messageRepository.createQueryBuilder('message')
+//             .innerJoin('message.chat','chat')
+//             .where('chat.id = :chatId',{chatId: req.params.chatId})
+//             .innerJoin('message.writtenBy','writtenBy')
+//             .addSelect(['writtenBy.id','writtenBy.username'])
+//             .orderBy('message.sentTime','DESC')
+//             .where('message.sentTime >= :datetime',{datetime: new Date(req.query.datetime)})
+//             .getMany();
+//         res.send(messages);
+//     }
+// });
 chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
     const messageRepository = getManager().getRepository(Message);const chatRepository = getManager().getRepository(Chat);
     const chatWithUsers = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["users"]});
@@ -104,10 +106,23 @@ chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
         const messages = await messageRepository.createQueryBuilder('message')
             .innerJoin('message.chat','chat')
             .where('chat.id = :chatId',{chatId: req.params.chatId})
+            .innerJoin('message.writtenBy','writtenBy')
+            .addSelect(['writtenBy.id','writtenBy.username'])
             .orderBy('message.sentTime','DESC')
-            .where('message.id > :id',{id: req.query.id})
+            .andWhere('message.id > :id',{id: req.query.id})
             .getMany();
         res.send(messages);
+        
+        // await messageRepository.createQueryBuilder('message')
+        //     .innerJoin('message.chat','chat')
+        //     .where('chat.id = :chatId',{chatId: req.params.chatId})
+        //     .innerJoin('message.writtenBy','writtenBy')
+        //     .addSelect(['writtenBy.id','writtenBy.username'])
+        //     .orderBy('message.sentTime','DESC')
+        //     .where('message.id > :id',{id: req.query.id})
+        //     .getRawMany().then((val) => {
+        //         console.log(val);
+        //     })
     }
 });
 chatRouter.post('/:chatId/addUser', async (req,res) => {
