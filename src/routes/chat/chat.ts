@@ -112,17 +112,6 @@ chatRouter.get('/:chatId/getMessagesAfter', async (req,res) => {
             .andWhere('message.id > :id',{id: req.query.id})
             .getMany();
         res.send(messages);
-        
-        // await messageRepository.createQueryBuilder('message')
-        //     .innerJoin('message.chat','chat')
-        //     .where('chat.id = :chatId',{chatId: req.params.chatId})
-        //     .innerJoin('message.writtenBy','writtenBy')
-        //     .addSelect(['writtenBy.id','writtenBy.username'])
-        //     .orderBy('message.sentTime','DESC')
-        //     .where('message.id > :id',{id: req.query.id})
-        //     .getRawMany().then((val) => {
-        //         console.log(val);
-        //     })
     }
 });
 chatRouter.post('/:chatId/addUser', async (req,res) => {
