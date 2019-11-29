@@ -42,3 +42,13 @@ userRouter.post('/info', async (req, res) => {
                         res.status(200).send({});
                 })
 });
+userRouter.get('/users', async (req,res) => {
+        getManager()
+        .createQueryBuilder(User,'user')
+        .where('user.username LIKE :query OR user.email LIKE :query',{'query':'%'+req.query.query+'%'})
+        .limit(50)
+        .getMany()
+        .then((users: User[]) => {
+                res.send(users);
+        });
+});
