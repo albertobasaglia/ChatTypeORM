@@ -45,7 +45,7 @@ userRouter.post('/info', async (req, res) => {
 userRouter.get('/users', async (req,res) => {
         getManager()
         .createQueryBuilder(User,'user')
-        .where('user.username LIKE :query OR user.email LIKE :query',{'query':'%'+req.query.query+'%'})
+        .where('(user.username LIKE :query OR user.email LIKE :query) AND user.id <> :userId',{'query':'%'+req.query.query+'%','userId':req.userId})
         .limit(50)
         .getMany()
         .then((users: User[]) => {
