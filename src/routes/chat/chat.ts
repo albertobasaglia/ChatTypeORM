@@ -134,6 +134,26 @@ chatRouter.post('/:chatId/addUser', async (req,res) => {
         });
     }
 });
+chatRouter.post('/:chatId/removeUser', async (req,res) => {
+    const chatRepository = getManager().getRepository(Chat);
+    const chat = await chatRepository.findOne({where: {id: req.params.chatId},relations: ["createdBy","users"]});
+    // TODO check if admins
+    const user = await getManager().getRepository(User).findOne({where: {id: req.userId}});    
+    if(chat.createdBy.id != user.id)  {
+        res.status(403).send({msg: 'Non hai i permessi!'});
+    } else {
+        getManager().getRepository(User).findOne({where: {id: req.body.userId}})
+        .then((toAdd: User) => {
+            if(toAdd == null) {
+                res.status(400).send({msg: 'Unknown user!'});
+            } else {
+                chat.users.splice(chat.users.indexOf(toAdd),1);
+                chatRepository.save(chat);
+                res.status(200).send({msg: 'Ok!'});
+            }
+        });
+    }
+});
 chatRouter.get('/:chatId/info',async (req,res) => {
     const chatRepository = getManager().getRepository(Chat);
     const chat = await chatRepository.findOne({where: {id: req.params.chatId},relations: ['users']});
