@@ -22,5 +22,8 @@ router.use((req: Request,res: Response, next: NextFunction) => {
         }
     });
 });
+router.get('/isLogged',(req,res) => {
+    res.status(200).send({msg: 'Logged!'});
+});
 router.use('/user',userRouter);
 router.use('/chat',chatRouter);
