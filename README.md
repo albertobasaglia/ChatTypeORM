@@ -1,7 +1,5 @@
-# Awesome Project Build with TypeORM
+# Chat server using TypeORM.
 
-Steps to run this project:
+Although http requests might not be the best choice for developing a realtime chat, it was a good example to learn typeorm.
 
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+Because I'm using http requests and a rest endpoint, I must have a polling to check for new messages. The endpoint responsible for that only returns the messages that the client doesn't have (to accomplish this I return messages since the datetime of the last one the client received).
